@@ -13,7 +13,7 @@ export const textEventHandler = async (event: WebhookEvent): Promise<MessageAPIR
   }
   const { replyToken } = event;
   const { text } = event.message;
-  
+  console.log(text);
   const hisText = await hisReply(text);
   const replyText = hisText !== null ? hisText:
   'ごめんね。お母さん調子悪いみたい。もう一度言ってもらうか、また後で話しかけてね。'
@@ -22,5 +22,6 @@ export const textEventHandler = async (event: WebhookEvent): Promise<MessageAPIR
     type: 'text',
     text: replyText
   };
+  console.log(replyText);
   await client.replyMessage(replyToken, response);
 }
