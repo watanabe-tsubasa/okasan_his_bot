@@ -1,29 +1,14 @@
 import { Hono } from "hono";
 import { serveStatic } from "hono/bun";
-import { ClientConfig, Client, WebhookEvent, TextMessage, MessageAPIResponseBase } from "@line/bot-sdk";
-
-const clientConfig: ClientConfig = {
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN || 'copy_paste_here',
-  channelSecret: process.env.CHANNEL_SECRET || 'copy_paste_here',
-};
+import { WebhookEvent } from "@line/bot-sdk";
+import { textEventHandler } from "./modules/handler";
+import { awakeMessage } from "./modules/awakeMessage";
 
 const portString = process.env.PORT;
 const port = portString ? parseInt(portString) : 3000;
-const client = new Client(clientConfig);
-const app = new Hono();
 
-const textEventHandler = async (event: WebhookEvent): Promise<MessageAPIResponseBase | undefined> => {
-  if (event.type !== 'message' || event.message.type !== 'text') {
-    return;
-  }
-  const { replyToken } = event;
-  const { text } = event.message;
-  const response: TextMessage = {
-    type: 'text',
-    text: text
-  };
-  await client.replyMessage(replyToken, response);
-}
+const app = new Hono();
+awakeMessage()
 
 app.use("/favicon.ico", serveStatic({ path: "./public/favicon.ico" }));
 app.get("/", (c) => {
